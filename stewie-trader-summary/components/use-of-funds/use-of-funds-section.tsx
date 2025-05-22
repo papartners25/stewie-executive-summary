@@ -120,7 +120,7 @@ export function UseOfFundsSection() {
             </div>
             <div className="relative z-10 ml-4">
               <p className="text-lg text-slate-200 italic leading-relaxed">
-                "Stewie Trader is securing $2M in funding at a $10M post-money valuation to revolutionize algorithmic
+                "Stewie Trader is securing $1M in funding at a $4M valuation to revolutionize algorithmic
                 trading with our AI-powered platform—delivering institutional-grade capabilities to Main Street advisors
                 and emerging hedge funds through sophisticated machine learning and seamless compliance integration."
               </p>
