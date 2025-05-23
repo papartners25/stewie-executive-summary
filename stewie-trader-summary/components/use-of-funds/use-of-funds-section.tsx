@@ -6,7 +6,7 @@ import { FundCategoryCard } from "./fund-category-card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { exportToCSV } from "@/utils/export-to-csv"
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, LabelList } from "recharts"
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from "recharts"
 
 export function UseOfFundsSection() {
   const handleExport = () => {
@@ -52,6 +52,28 @@ export function UseOfFundsSection() {
       </div>
     )
   }
+
+  // Custom label for pie chart
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius + 30;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="#f8fafc"
+        fontWeight="bold"
+        fontSize={12}
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
+      >
+        {name}
+      </text>
+    );
+  };
 
   return (
     <section className="bg-slate-950/50 py-16">
@@ -125,6 +147,7 @@ export function UseOfFundsSection() {
                         dataKey="value"
                         strokeWidth={2}
                         stroke="#0f172a"
+                        label={renderCustomizedLabel}
                       >
                         {pieData.map((entry, index) => (
                           <Cell 
@@ -133,12 +156,6 @@ export function UseOfFundsSection() {
                             style={{ filter: 'drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.3))' }}
                           />
                         ))}
-                        <LabelList 
-                          dataKey="name" 
-                          position="outside" 
-                          style={{ fill: '#f8fafc', fontWeight: 'bold', fontSize: 12 }}
-                          offset={20}
-                        />
                       </Pie>
                       <Tooltip
                         formatter={(value) => [`$${value.toLocaleString()}`, "Amount"]}
