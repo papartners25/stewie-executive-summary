@@ -6,7 +6,7 @@ import { FundCategoryCard } from "./fund-category-card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { exportToCSV } from "@/utils/export-to-csv"
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from "recharts"
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, LabelList } from "recharts"
 
 export function UseOfFundsSection() {
   const handleExport = () => {
@@ -18,10 +18,40 @@ export function UseOfFundsSection() {
     name: category.name,
     value: category.amount,
     percentage: ((category.amount / useOfFundsData.totalRaise) * 100).toFixed(1),
+    label: `${((category.amount / useOfFundsData.totalRaise) * 100).toFixed(1)}%`,
+    amount: `$${category.amount.toLocaleString()}`,
   }))
 
-  // Colors for pie chart
-  const COLORS = ["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#d1fae5"]
+  // Colors for pie chart with better contrast
+  const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ec4899", "#8b5cf6"]
+
+  // Custom render for the legend
+  const renderLegendContent = (props) => {
+    const { payload } = props
+    
+    return (
+      <div className="p-4 bg-slate-800/70 rounded-lg shadow-lg">
+        <h4 className="text-emerald-400 font-semibold text-sm mb-3">Budget Allocation</h4>
+        <ul className="space-y-3">
+          {payload.map((entry, index) => (
+            <li key={`item-${index}`} className="flex items-center">
+              <div 
+                className="w-3 h-3 rounded-sm mr-2" 
+                style={{ backgroundColor: entry.color }}
+              />
+              <div className="flex flex-col">
+                <span className="text-slate-200 font-medium text-sm">{entry.value}</span>
+                <div className="flex space-x-2 text-xs">
+                  <span className="text-emerald-400">{pieData[index].label}</span>
+                  <span className="text-slate-400">{pieData[index].amount}</span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
 
   return (
     <section className="bg-slate-950/50 py-16">
@@ -87,25 +117,46 @@ export function UseOfFundsSection() {
                         data={pieData}
                         cx="50%"
                         cy="50%"
-                        labelLine={true}
-                        outerRadius={180}
+                        labelLine={false}
+                        outerRadius={160}
+                        innerRadius={80}
+                        paddingAngle={3}
                         fill="#8884d8"
                         dataKey="value"
-                        label={({ name, percentage }) => `${name}: ${percentage}%`}
+                        strokeWidth={2}
+                        stroke="#0f172a"
                       >
                         {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={COLORS[index % COLORS.length]} 
+                            style={{ filter: 'drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.3))' }}
+                          />
                         ))}
+                        <LabelList 
+                          dataKey="name" 
+                          position="outside" 
+                          style={{ fill: '#f8fafc', fontWeight: 'bold', fontSize: 12 }}
+                          offset={20}
+                        />
                       </Pie>
                       <Tooltip
                         formatter={(value) => [`$${value.toLocaleString()}`, "Amount"]}
-                        contentStyle={{ backgroundColor: "#1e293b", borderColor: "#334155", color: "#f8fafc" }}
+                        contentStyle={{ 
+                          backgroundColor: "#1e293b", 
+                          borderColor: "#10b981", 
+                          color: "#f8fafc",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
+                          padding: "8px 12px"
+                        }}
                       />
-                      <Legend
+                      <Legend 
+                        content={renderLegendContent}
                         layout="vertical"
                         verticalAlign="middle"
                         align="right"
-                        formatter={(value) => <span className="text-slate-300">{value}</span>}
+                        wrapperStyle={{ paddingLeft: "10px" }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -140,4 +191,3 @@ export function UseOfFundsSection() {
     </section>
   )
 }
-
